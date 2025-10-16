@@ -22,12 +22,20 @@ document.body.appendChild(toggleButton);
 
 toggleButton.addEventListener('click', () => {
     sidebar.classList.toggle('active');
+    // Hide hamburger button when sidebar is open
+    if (sidebar.classList.contains('active')) {
+        toggleButton.style.display = 'none';
+    } else {
+        toggleButton.style.display = 'block';
+    }
 });
 
 // Close mobile menu when clicking on a link
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         sidebar.classList.remove('active');
+        // Show hamburger button when sidebar is closed
+        toggleButton.style.display = 'block';
     });
 });
 
@@ -35,6 +43,8 @@ document.querySelectorAll('.nav-link').forEach(link => {
 document.addEventListener('click', (e) => {
     if (!sidebar.contains(e.target) && !toggleButton.contains(e.target)) {
         sidebar.classList.remove('active');
+        // Show hamburger button when sidebar is closed
+        toggleButton.style.display = 'block';
     }
 });
 
