@@ -22,10 +22,10 @@ document.body.appendChild(toggleButton);
 
 toggleButton.addEventListener('click', () => {
     sidebar.classList.toggle('active');
-    // Hide hamburger button when sidebar is open
-    if (sidebar.classList.contains('active')) {
+    // Hide hamburger button when sidebar is open (mobile only)
+    if (sidebar.classList.contains('active') && window.innerWidth <= 768) {
         toggleButton.style.display = 'none';
-    } else {
+    } else if (window.innerWidth <= 768) {
         toggleButton.style.display = 'block';
     }
 });
@@ -34,8 +34,10 @@ toggleButton.addEventListener('click', () => {
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         sidebar.classList.remove('active');
-        // Show hamburger button when sidebar is closed
-        toggleButton.style.display = 'block';
+        // Show hamburger button when sidebar is closed (mobile only)
+        if (window.innerWidth <= 768) {
+            toggleButton.style.display = 'block';
+        }
     });
 });
 
@@ -43,8 +45,10 @@ document.querySelectorAll('.nav-link').forEach(link => {
 document.addEventListener('click', (e) => {
     if (!sidebar.contains(e.target) && !toggleButton.contains(e.target)) {
         sidebar.classList.remove('active');
-        // Show hamburger button when sidebar is closed
-        toggleButton.style.display = 'block';
+        // Show hamburger button when sidebar is closed (mobile only)
+        if (window.innerWidth <= 768) {
+            toggleButton.style.display = 'block';
+        }
     }
 });
 
@@ -52,6 +56,10 @@ document.addEventListener('click', (e) => {
 function handleResize() {
     if (window.innerWidth <= 768) {
         toggleButton.style.display = 'block';
+        // If sidebar is open on mobile, hide hamburger
+        if (sidebar.classList.contains('active')) {
+            toggleButton.style.display = 'none';
+        }
     } else {
         toggleButton.style.display = 'none';
         sidebar.classList.remove('active');
