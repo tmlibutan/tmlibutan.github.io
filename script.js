@@ -93,13 +93,27 @@ window.addEventListener('scroll', () => {
     const navLinks = document.querySelectorAll('.nav-link');
     
     let current = '';
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop - 100;
-        const sectionHeight = section.clientHeight;
-        if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
-            current = section.getAttribute('id');
-        }
-    });
+    const scrollPosition = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Check if we're at the very bottom of the page
+    const isAtBottom = scrollPosition + windowHeight >= documentHeight - 10;
+    
+    if (isAtBottom && sections.length > 0) {
+        // If at bottom, highlight the last section (contact)
+        current = sections[sections.length - 1].getAttribute('id');
+    } else {
+        // Normal section detection
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.clientHeight;
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+    }
     
     navLinks.forEach(link => {
         link.classList.remove('active');
