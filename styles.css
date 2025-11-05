@@ -471,6 +471,32 @@ body {
     }
 }
 
+/* Mobile Navigation Toggle Button */
+.nav-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1002;
+    background: #0a192f;
+    border: none;
+    color: #64ffda;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.nav-toggle:hover {
+    background: rgba(100, 255, 218, 0.1);
+}
+
+.nav-toggle:focus {
+    outline: 2px solid #64ffda;
+    outline-offset: 2px;
+}
+
 /* Animations */
 @keyframes fadeInUp {
     from {
