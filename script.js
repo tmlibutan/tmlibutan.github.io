@@ -2,28 +2,17 @@
 const sidebar = document.querySelector('.sidebar');
 const toggleButton = document.createElement('button');
 toggleButton.className = 'nav-toggle';
-toggleButton.innerHTML = '<i class="fas fa-bars"></i>';
-toggleButton.style.cssText = `
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1002;
-    background: #0a192f;
-    border: none;
-    color: #64ffda;
-    font-size: 1.5rem;
-    padding: 0.5rem;
-    cursor: pointer;
-    border-radius: 4px;
-    display: none;
-`;
+toggleButton.setAttribute('aria-label', 'Toggle navigation menu');
+toggleButton.setAttribute('aria-expanded', 'false');
+toggleButton.innerHTML = '<i class="fas fa-bars" aria-hidden="true"></i>';
 
 document.body.appendChild(toggleButton);
 
 toggleButton.addEventListener('click', () => {
-    sidebar.classList.toggle('active');
+    const isActive = sidebar.classList.toggle('active');
+    toggleButton.setAttribute('aria-expanded', isActive.toString());
     // Hide hamburger button when sidebar is open (mobile only)
-    if (sidebar.classList.contains('active') && window.innerWidth <= 768) {
+    if (isActive && window.innerWidth <= 768) {
         toggleButton.style.display = 'none';
     } else if (window.innerWidth <= 768) {
         toggleButton.style.display = 'block';
@@ -34,6 +23,7 @@ toggleButton.addEventListener('click', () => {
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         sidebar.classList.remove('active');
+        toggleButton.setAttribute('aria-expanded', 'false');
         // Show hamburger button when sidebar is closed (mobile only)
         if (window.innerWidth <= 768) {
             toggleButton.style.display = 'block';
@@ -45,6 +35,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
 document.addEventListener('click', (e) => {
     if (!sidebar.contains(e.target) && !toggleButton.contains(e.target)) {
         sidebar.classList.remove('active');
+        toggleButton.setAttribute('aria-expanded', 'false');
         // Show hamburger button when sidebar is closed (mobile only)
         if (window.innerWidth <= 768) {
             toggleButton.style.display = 'block';
@@ -63,6 +54,7 @@ function handleResize() {
     } else {
         toggleButton.style.display = 'none';
         sidebar.classList.remove('active');
+        toggleButton.setAttribute('aria-expanded', 'false');
     }
 }
 
@@ -105,8 +97,22 @@ tabButtons.forEach(button => {
     });
 });
 
+// Throttle function for performance optimization
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
 // Add active class to navigation links based on scroll position
-window.addEventListener('scroll', () => {
+window.addEventListener('scroll', throttle(() => {
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
     
@@ -115,19 +121,30 @@ window.addEventListener('scroll', () => {
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     
-    // Check if we're at the very bottom of the page
-    const isAtBottom = scrollPosition + windowHeight >= documentHeight - 10;
+    // Check if we're at the very top of the page
+    const isAtTop = scrollPosition < 100;
     
-    if (isAtBottom && sections.length > 0) {
+    // Check if we're at the very bottom of the page (with larger threshold)
+    const isAtBottom = scrollPosition + windowHeight >= documentHeight - 50;
+    
+    if (isAtTop && sections.length > 0) {
+        // If at top, highlight the first section (about)
+        current = sections[0].getAttribute('id');
+    } else if (isAtBottom && sections.length > 0) {
         // If at bottom, highlight the last section (contact)
         current = sections[sections.length - 1].getAttribute('id');
     } else {
-        // Normal section detection
-        sections.forEach(section => {
+        // Normal section detection - check each section
+        sections.forEach((section, index) => {
             const sectionTop = section.offsetTop - 100;
             const sectionHeight = section.clientHeight;
+            const sectionBottom = sectionTop + sectionHeight;
+            const isLastSection = index === sections.length - 1;
             
-            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+            // For the last section, extend the detection range to catch bottom of page
+            if (isLastSection && scrollPosition >= sectionTop) {
+                current = section.getAttribute('id');
+            } else if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
                 current = section.getAttribute('id');
             }
         });
@@ -139,7 +156,7 @@ window.addEventListener('scroll', () => {
             link.classList.add('active');
         }
     });
-});
+}, 100));
 
 // Intersection Observer for animations
 const observerOptions = {
