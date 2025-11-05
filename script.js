@@ -202,14 +202,29 @@ function calculateDuration(startDate, endDate = null) {
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : new Date();
     
-    const yearDiff = end.getFullYear() - start.getFullYear();
-    const monthDiff = end.getMonth() - start.getMonth();
+    const startYear = start.getFullYear();
+    const startMonth = start.getMonth();
+    const startDay = start.getDate();
     
-    let totalMonths = yearDiff * 12 + monthDiff;
+    const endYear = end.getFullYear();
+    const endMonth = end.getMonth();
+    const endDay = end.getDate();
     
-    // Adjust if the end day is before the start day
-    if (end.getDate() < start.getDate()) {
-        totalMonths--;
+    // Calculate base months difference
+    let totalMonths = (endYear - startYear) * 12 + (endMonth - startMonth);
+    
+    // Add 1 to count both start and end months inclusively
+    // Only subtract if we haven't reached the start day in the end month
+    if (endMonth === startMonth && endYear === startYear) {
+        // Same month: show 1 month if we've reached/passed the start day
+        totalMonths = endDay >= startDay ? 1 : 0;
+    } else {
+        // Different months: add 1 for inclusive counting
+        totalMonths += 1;
+        // If we haven't reached the start day in the end month, subtract 1
+        if (endDay < startDay) {
+            totalMonths--;
+        }
     }
     
     const years = Math.floor(totalMonths / 12);
