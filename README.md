@@ -4,7 +4,7 @@ My personal portfolio website showcasing my professional experience and projects
 
 ## Live Site
 
-🌐 **[View Portfolio](https://yourusername.github.io/Portfolio)**
+🌐 **[View Portfolio](https://tmlibutan.github.io/)**
 
 ## About
 
